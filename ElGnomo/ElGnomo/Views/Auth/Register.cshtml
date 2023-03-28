@@ -1,0 +1,71 @@
+﻿@using ElGnomoModels.ViewModels
+@model UserView
+@{
+    Layout = "_AuthLayout";
+}
+
+<div class="container">
+    <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-4 col-md-10 col-sm-10 d-flex flex-column align-items-center justify-content-center">
+                    <div class="d-flex justify-content-center py-4">
+                        <a href="index.html" class="logo d-flex align-items-center w-auto">
+                            <img src="~/assets/img/logo.png" alt="">
+                            <span class="d-none d-lg-block">ElGnomo</span>
+                        </a>
+                    </div><!-- End Logo -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="pt-4 pb-2">
+                                <h5 class="card-title text-center pb-0 fs-4">Crear una Cuenta</h5>
+                            </div>
+
+                            <form class="row g-3 needs-validation" asp-action="Register" novalidate>
+                                <div class="col-12">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" name="firstname" asp-for="FirstName" class="form-control" required>
+                                    <div class="invalid-feedback">El nombre es necesario</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">Apellido</label>
+                                    <input type="text" name="lastname" asp-for="LastName" class="form-control" required>
+                                    <div class="invalid-feedback">El apellido es necesario</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">Correo electr&oacute;nico</label>
+                                    <input type="email" name="email" asp-for="Email" class="form-control" required>
+                                    <div class="invalid-feedback">El correo electronico es necesario</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">Contrase&ntilde;a</label>
+                                    <input type="password" name="password" asp-for="Password" class="form-control" required>
+                                    <div class="invalid-feedback">La contrase&ntilde;a es necesaria</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">Contrase&ntilde;a</label>
+                                    <input type="password" name="confirmPassword" asp-for="ConfirmPassword" class="form-control" required>
+                                    <div class="invalid-feedback">La confirmación de contrase&ntilde;a es necesaria</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100" type="submit">Crear Cuenta</button>
+                                </div>
+                                <div class="col-12">
+                                    <p class="small mb-0">¿Ya tienes una cuenta? <a href="@Url.Action("Login")">Iniciar sesi&oacute;n</a></p>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</div>
