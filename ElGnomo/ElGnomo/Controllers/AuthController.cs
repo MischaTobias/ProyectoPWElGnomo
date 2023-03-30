@@ -1,5 +1,4 @@
-﻿using ElGnomo.Models;
-using ElGnomo.Utils;
+﻿using ElGnomo.Utils;
 using ElGnomoModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +6,12 @@ namespace ElGnomo.Controllers
 {
     public class AuthController : Controller
     {
-        private readonly ElgnomoContext _context;
+        private readonly APIServices _services = new();
         public AuthController()
         {
-            _context = new ElgnomoContext();
+            _services.SetModule("Auth");
         }
+
 
         public IActionResult Register()
         {
@@ -19,20 +19,15 @@ namespace ElGnomo.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(UserView user)
+        public async Task<IActionResult> Register(UserView user)
         {
             if (string.IsNullOrWhiteSpace(user.Password) || user.Password != user.ConfirmPassword) return View();
-            User newUser = new()
-            {
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PasswordHash = Cypher.CypherText(user.Password)
-            };
-            _context.Users.Add(newUser);
-            _context.SaveChanges();
-            
-            return View();
+            user.PasswordHash = Cypher.CypherText(user.Password);
+
+            var result = await _services.Post<bool>(user, "register");
+            if (!result) return View();
+
+            return RedirectToAction("Login");
         }
 
         public IActionResult Login()
@@ -41,15 +36,15 @@ namespace ElGnomo.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(UserView user)
+        public async Task<IActionResult> Login(UserView user)
         {
             if (string.IsNullOrWhiteSpace(user.Password)) return View();
+            user.PasswordHash = Cypher.CypherText(user.Password);
 
-            var encryptedPassword = Cypher.CypherText(user.Password);
-            var exists = _context.Users.Where(u => u.Email == user.Email && u.PasswordHash == encryptedPassword).Any();
-            if(!exists) return View();
+            var result = await _services.Post<bool>(user, "login");
+            if (!result) return View();
 
-            return View();
+            return RedirectToAction("Index", "Home");
         }
     }
 }

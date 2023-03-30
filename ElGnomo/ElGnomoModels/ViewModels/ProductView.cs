@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ElGnomo.Models;
+namespace ElGnomoModels.ViewModels;
 
-public partial class Product
+public partial class ProductView
 {
     public int Id { get; set; }
 

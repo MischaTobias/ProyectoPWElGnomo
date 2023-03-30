@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ElGnomo.Models;
+namespace ElGnomoModels.ViewModels;
 
-public partial class Role
+public partial class RoleView
 {
     public int Id { get; set; }
 
@@ -11,5 +11,5 @@ public partial class Role
 
     public string? Description { get; set; }
 
-    public virtual ICollection<User> Users { get; } = new List<User>();
+    public virtual ICollection<UserView> Users { get; } = new List<UserView>();
 }
