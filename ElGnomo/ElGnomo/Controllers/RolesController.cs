@@ -2,23 +2,29 @@
 using Microsoft.EntityFrameworkCore;
 using ElGnomo.Models;
 using ElGnomoModels.ViewModels;
+using ElGnomo.Utils;
 
 namespace ElGnomo.Controllers
 {
     public class RolesController : Controller
     {
+        private readonly APIServices _services = new();
+        public RolesController()
+        {
+            _services.SetModule("Roles");
+        }
         // GET: Roles
         public async Task<IActionResult> Index()
         {
-            return View();
-
+            var roles = await _services.Get<IEnumerable<RoleView>>();
+            return View(roles);
         }
 
         // GET: Roles/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
-
+            var role = await _services.Get<RoleView>(id.ToString());
+            return View(role);
         }
 
         // GET: Roles/Create
@@ -34,15 +40,15 @@ namespace ElGnomo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoleView role)
         {
-            return View();
-
+            await _services.Post(role);
+            return RedirectToAction("Index");
         }
 
         // GET: Roles/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
-
+            var role = await _services.Get<RoleView>(id.ToString());
+            return View(role);
         }
 
         // POST: Roles/Edit/5
@@ -52,15 +58,15 @@ namespace ElGnomo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(RoleView role)
         {
-            return View();
-
+            await _services.Put(role, role.Id.ToString());
+            return RedirectToAction("Index");
         }
 
         // GET: Roles/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            return View();
-
+            var role = await _services.Get<RoleView>(id.ToString());
+            return View(role);
         }
 
         // POST: Roles/Delete/5
@@ -68,8 +74,8 @@ namespace ElGnomo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return View();
-
+            await _services.Delete(id.ToString());
+            return RedirectToAction("Index");
         }
     }
 }
