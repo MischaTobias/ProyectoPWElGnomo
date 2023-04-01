@@ -12,7 +12,6 @@ namespace ElGnomo.Controllers
             _services.SetModule("Auth");
         }
 
-
         public IActionResult Register()
         {
             return View();
