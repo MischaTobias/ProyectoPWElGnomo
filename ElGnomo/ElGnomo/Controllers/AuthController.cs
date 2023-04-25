@@ -1,6 +1,8 @@
-﻿using ElGnomo.Utils;
+﻿using ElGnomo.Models;
+using ElGnomo.Utils;
 using ElGnomoModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace ElGnomo.Controllers
 {
@@ -14,6 +16,7 @@ namespace ElGnomo.Controllers
 
         public IActionResult Register()
         {
+            if (HttpContext.Session.GetInt32("UserId") != null) return RedirectToAction("Products");
             return View();
         }
 
@@ -31,6 +34,7 @@ namespace ElGnomo.Controllers
 
         public IActionResult Login()
         {
+            if (HttpContext.Session.GetInt32("UserId") != null) return RedirectToAction("Products");
             return View();
         }
 
@@ -43,7 +47,13 @@ namespace ElGnomo.Controllers
             var result = await _services.Post<bool>(user, "login");
             if (!result) return View();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Products");
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

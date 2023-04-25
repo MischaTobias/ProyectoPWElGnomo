@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ElGnomo.Models;
 using ElGnomoModels.ViewModels;
 using ElGnomo.Utils;
 
@@ -42,7 +40,7 @@ namespace ElGnomo.Controllers
         public async Task<IActionResult> Create(ProductView product)
         {
             await _services.Post(product);
-            return View();
+            return RedirectToAction("Index");
 
         }
 

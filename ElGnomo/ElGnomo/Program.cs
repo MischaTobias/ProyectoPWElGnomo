@@ -1,7 +1,37 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(opts =>
+{
+    opts.IdleTimeout = TimeSpan.FromHours(1);
+    opts.Cookie.Name = "ElGnomo.Session",
+    opts.Cookie.HttpOnly = true;
+    opts.Cookie.IsEssential = true;
+});
+
+builder.Services.AddCors(opts =>
+{
+    opts.AddPolicy("AllOrigins", builder =>
+    {
+        builder.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+    });
+});
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(opts =>
+    {
+        opts.Cookie.SameSite = SameSiteMode.None;
+        opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        opts.LoginPath = "/Auth/Login";
+    });
 
 var app = builder.Build();
 
@@ -17,6 +47,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
