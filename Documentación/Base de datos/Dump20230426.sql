@@ -35,7 +35,7 @@ CREATE TABLE `product` (
   `Discount` decimal(5,2) DEFAULT NULL,
   `QuantityInStock` int DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +44,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'Nintendo Switch',3455.00,'Consolas','Nintendo',2600.00,NULL,0.00,100);
+INSERT INTO `product` VALUES (1,'Nintendo Switch',3455.00,'Consolas','Nintendo',2650.00,NULL,0.00,100),(4,'TLoZ: BotW',800.00,'Juegos','Nintendo',100.00,'portadaxd',0.00,15),(9,'Nintendo Switch',10000.00,'Consolas','Nintendo',2600.00,NULL,0.00,50),(10,'Switch Pro Controller',100.00,'idk','nintendo',20.00,NULL,10.00,550);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,7 +60,7 @@ CREATE TABLE `role` (
   `Name` varchar(50) DEFAULT NULL,
   `Description` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +69,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'Administrador','Administrador del sitio');
+INSERT INTO `role` VALUES (1,'Administrador','Administrador del sitio'),(8,'Cliente','Solamente acceso a ver los productos');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -81,13 +81,15 @@ DROP TABLE IF EXISTS `role_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `role_user` (
-  `RoleId` int NOT NULL,
-  `UserId` int NOT NULL,
-  PRIMARY KEY (`RoleId`,`UserId`),
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `RoleId` int DEFAULT NULL,
+  `UserId` int DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `RoleId` (`RoleId`),
   KEY `UserId` (`UserId`),
   CONSTRAINT `role_user_ibfk_1` FOREIGN KEY (`RoleId`) REFERENCES `role` (`Id`),
   CONSTRAINT `role_user_ibfk_2` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,6 +98,7 @@ CREATE TABLE `role_user` (
 
 LOCK TABLES `role_user` WRITE;
 /*!40000 ALTER TABLE `role_user` DISABLE KEYS */;
+INSERT INTO `role_user` VALUES (1,1,2),(2,1,1),(4,1,6),(5,8,9),(6,8,7);
 /*!40000 ALTER TABLE `role_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,7 +116,7 @@ CREATE TABLE `user` (
   `Email` varchar(100) DEFAULT NULL,
   `PasswordHash` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,9 +125,13 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Mischa','Tobias','test@test.com','pass');
+INSERT INTO `user` VALUES (1,'Mischa','Tobias','mischa@tobias.com','passwordXD'),(2,'Ale','Recinos','ale@recinos.com','passwordXD'),(6,'neto','villeda','neto@gmail.com','MTIz'),(7,'mashin','morales','mashin@gmail.com','MTIz'),(9,'cliente','cliente','cliente@gmail.com','MTIz');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'elgnomo'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -135,4 +142,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-02-26 22:09:00
+-- Dump completed on 2023-04-26 13:18:13
