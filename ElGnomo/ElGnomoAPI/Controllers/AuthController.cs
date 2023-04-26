@@ -36,7 +36,14 @@ public class AuthController : ControllerBase
 
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
-        return new TokenView() { Token = CustomJWT.GetToken(newUser.Email, _configuration) };
+        RoleUser newRoleUser = new()
+        {
+            RoleId = 8,
+            UserId = newUser.Id,
+        };
+        _context.RoleUsers.Add(newRoleUser);
+        await _context.SaveChangesAsync();
+        return new TokenView() { Token = CustomJWT.GetToken(newUser.Email, _configuration), Role = "Cliente" };
     }
 
     [HttpPost("login")]
@@ -44,6 +51,10 @@ public class AuthController : ControllerBase
     {
         var userInfo = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email && u.PasswordHash == Cypher.CypherText(user.Password!));
         if (userInfo == null) return new TokenView();
-        return new TokenView() { Token = CustomJWT.GetToken(userInfo.Email, _configuration) };
+
+        var userRole = await _context.RoleUsers.FirstOrDefaultAsync(ru => ru.UserId == userInfo.Id);
+        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == userRole.RoleId);
+
+        return new TokenView() { Token = CustomJWT.GetToken(userInfo.Email, _configuration), Role = role.Name };
     }
 }

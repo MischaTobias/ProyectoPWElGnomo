@@ -7,21 +7,17 @@ namespace ElGnomo.Utils;
 public class APIServices
 {
     private readonly int Timeout = 30;
-    //private static string Url = "https://localhost:7051/api";
+    private string Url = default!;
+    //private readonly string BaseUri = "https://localhost:7297/api/";
+    private readonly string BaseUri = "https://localhost/ElGnomoAPI/api/";
     private HttpClient _client = new();
     private readonly HttpClientHandler _clientHandler = new();
     private readonly IHttpContextAccessor _accessor;
-    private string Url = default!;
     private readonly HttpStatusCode[] ErrorCodes = new[] { HttpStatusCode.BadRequest, HttpStatusCode.InternalServerError };
 
     public APIServices(IHttpContextAccessor accessor)
     {
         _accessor = accessor;
-    }
-
-    public APIServices SetModule(string controllerName)
-    {
-        Url = $"https://localhost/ElGnomoAPI/api/{controllerName}/";
         _clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
         _client = new(_clientHandler)
         {
@@ -31,6 +27,11 @@ public class APIServices
         var token = _accessor.HttpContext!.Session.GetString("Token");
         _client.DefaultRequestHeaders.Authorization = null;
         _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+    }
+
+    public APIServices SetModule(string controllerName)
+    {
+        Url = $"{BaseUri}{controllerName}/";
         return this;
     }
 

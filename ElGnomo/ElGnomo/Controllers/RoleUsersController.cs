@@ -1,6 +1,7 @@
 ﻿using ElGnomo.Utils;
 using ElGnomoModels.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ElGnomo.Controllers
 {
@@ -25,9 +26,31 @@ namespace ElGnomo.Controllers
             return View(roleUser);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var usersAPIService = _services.SetModule("Users");
+            var users = await usersAPIService.Get<IEnumerable<UserView>>();
+            var rolesAPIService = _services.SetModule("Roles");
+            var roles = await rolesAPIService.Get<IEnumerable<RoleView>>();
+
+            RoleUsersView roleUsersView = new()
+            {
+                Users = users.Select(u => new SelectListItem()
+                {
+                    Value = u.Id.ToString(),
+                    Text = u.Email
+                }).ToList(),
+                Roles = roles.Select(r => new SelectListItem()
+                {
+                    Value = r.Id.ToString(),
+                    Text = r.Name
+                }).ToList(),
+                User = users.FirstOrDefault(),
+                Role = roles.FirstOrDefault()
+            };
+
+            _services.SetModule("RoleUsers"); //Use module again
+            return View(roleUsersView);
         }
 
         [HttpPost]
@@ -40,7 +63,27 @@ namespace ElGnomo.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
+            var usersAPIService = _services.SetModule("Users");
+            var users = await usersAPIService.Get<IEnumerable<UserView>>();
+            var rolesAPIService = _services.SetModule("Roles");
+            var roles = await rolesAPIService.Get<IEnumerable<RoleView>>();
+            _services.SetModule("RoleUsers"); //Use module again
             var roleUser = await _services.Get<RoleUsersView>(id.ToString());
+
+            roleUser.Users = users.Select(u => new SelectListItem()
+            {
+                Value = u.Id.ToString(),
+                Text = u.Email,
+                Selected = u.Id == roleUser.UserId
+            }).ToList();
+
+            roleUser.Roles = roles.Select(r => new SelectListItem()
+            {
+                Value = r.Id.ToString(),
+                Text = r.Name,
+                Selected = r.Id == roleUser.RoleId
+            }).ToList();
+
             return View(roleUser);
         }
 

@@ -1,4 +1,8 @@
-﻿<aside id="sidebar" class="sidebar">
+﻿@{
+    var isAdmin = Context.Session.GetString("Role") == "Administrador";
+}
+
+<aside id="sidebar" class="sidebar">
     <ul class="sidebar-nav" id="sidebar-nav">
         <li class="nav-heading">P&aacute;ginas</li>
 
@@ -9,19 +13,36 @@
             </a>
         </li><!-- End Products Page Nav -->
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="@Url.Action("Index", "Roles")">
-                <i class="bi bi-diagram-2"></i>
-                <span>Roles</span>
-            </a>
-        </li><!-- End Products Page Nav -->
+        @if (isAdmin)
+        {
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="@Url.Action("Index", "Roles")">
+                    <i class="bi bi-diagram-2"></i>
+                    <span>Roles</span>
+                </a>
+            </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="@Url.Action("Index", "Users")">
-                <i class="bi bi-people"></i>
-                <span>Users</span>
-            </a>
-        </li><!-- End Users Page Nav -->
+            <!-- End Products Page Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="@Url.Action("Index", "Users")">
+                    <i class="bi bi-people"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+
+            <!-- End Users Page Nav -->
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="@Url.Action("Index", "RoleUsers")">
+                    <i class="bi bi-person-lock"></i>
+                    <span>RoleUsers</span>
+                </a>
+            </li>
+
+            <!-- End RoleUsers Page Nav -->
+        }
+
 
     </ul>
 

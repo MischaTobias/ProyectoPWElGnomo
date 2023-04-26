@@ -80,5 +80,13 @@ namespace ElGnomo.Controllers
             await _services.Delete(id.ToString());
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<JsonResult> GetRoleJson()
+        {
+            var roleId = Convert.ToInt64(HttpContext.Request.Form["roleId"].First()?.ToString());
+            var role = await _services.Get<RoleView>(roleId.ToString());
+            return Json(role);
+        }
     }
 }

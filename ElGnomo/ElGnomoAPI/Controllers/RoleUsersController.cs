@@ -23,22 +23,39 @@ namespace ElGnomoAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoleUser>>> GetRoleUsers()
         {
-          if (_context.RoleUsers == null)
-          {
-              return NotFound();
-          }
-            return await _context.RoleUsers.ToListAsync();
+            if (_context.RoleUsers == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.RoleUsers
+                .Select(ru => new RoleUser()
+                {
+                    Id = ru.Id,
+                    RoleId = ru.RoleId,
+                    Role = _context.Roles.FirstOrDefault(r => r.Id == ru.RoleId),
+                    UserId = ru.UserId,
+                    User = _context.Users.FirstOrDefault(r => r.Id == ru.UserId)
+                }).ToListAsync();
         }
 
         // GET: api/RoleUsers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RoleUser>> GetRoleUser(int id)
         {
-          if (_context.RoleUsers == null)
-          {
-              return NotFound();
-          }
-            var roleUser = await _context.RoleUsers.FindAsync(id);
+            if (_context.RoleUsers == null)
+            {
+                return NotFound();
+            }
+            var roleUser = await _context.RoleUsers
+                .Select(ru => new RoleUser()
+                {
+                    Id = ru.Id,
+                    RoleId = ru.RoleId,
+                    Role = _context.Roles.FirstOrDefault(r => r.Id == ru.RoleId),
+                    UserId = ru.UserId,
+                    User = _context.Users.FirstOrDefault(r => r.Id == ru.UserId)
+                }).FirstOrDefaultAsync(ru => ru.Id == id);
 
             if (roleUser == null)
             {
@@ -53,6 +70,9 @@ namespace ElGnomoAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRoleUser(int id, RoleUser roleUser)
         {
+            roleUser.Role = default!;
+            roleUser.User = default!;
+
             if (id != roleUser.Id)
             {
                 return BadRequest();
@@ -84,10 +104,16 @@ namespace ElGnomoAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<RoleUser>> PostRoleUser(RoleUser roleUser)
         {
-          if (_context.RoleUsers == null)
-          {
-              return Problem("Entity set 'ElgnomoContext.RoleUsers'  is null.");
-          }
+            roleUser.Role = default!;
+            roleUser.User = default!;
+            if (_context.RoleUsers == null)
+            {
+                return Problem("Entity set 'ElgnomoContext.RoleUsers'  is null.");
+            }
+
+            if(_context.RoleUsers.Where(ru => ru.RoleId == roleUser.RoleId && ru.UserId == roleUser.UserId).Any())
+                return CreatedAtAction("GetRoleUser", new { id = roleUser.Id }, roleUser);
+
             _context.RoleUsers.Add(roleUser);
             await _context.SaveChangesAsync();
 

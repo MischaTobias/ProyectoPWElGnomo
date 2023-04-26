@@ -35,9 +35,9 @@ namespace ElGnomo.Controllers
 
             if (result == null) return View();
 
-            HttpContext.Session.SetInt32("UserId", user.Id);
             HttpContext.Session.SetString("Email", user.Email);
             HttpContext.Session.SetString("Token", result.Token);
+            HttpContext.Session.SetString("Role", result.Role);
 
             var claims = new List<Claim>
             {
@@ -67,6 +67,7 @@ namespace ElGnomo.Controllers
 
             HttpContext.Session.SetString("Email", user.Email);
             HttpContext.Session.SetString("Token", result.Token);
+            HttpContext.Session.SetString("Role", result.Role);
 
             var claims = new List<Claim>
             {

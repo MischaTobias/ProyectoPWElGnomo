@@ -71,5 +71,13 @@ namespace ElGnomo.Controllers
             await _services.Delete(id.ToString());
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<JsonResult> GetUserJson()
+        {
+            var userId = Convert.ToInt64(HttpContext.Request.Form["userId"].First()?.ToString());
+            var user = await _services.Get<UserView>(userId.ToString());
+            return Json(user);
+        }
     }
 }
