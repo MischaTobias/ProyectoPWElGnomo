@@ -2,11 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using ElGnomoAPI.GnomoDbContext;
 using ElGnomoAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ElGnomoAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class RolesController : ControllerBase
 {
     private readonly ElgnomoContext _context;

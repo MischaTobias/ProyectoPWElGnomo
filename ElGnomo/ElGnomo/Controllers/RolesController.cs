@@ -3,14 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using ElGnomo.Models;
 using ElGnomoModels.ViewModels;
 using ElGnomo.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ElGnomo.Controllers
 {
+    [Authorize]
     public class RolesController : Controller
     {
-        private readonly APIServices _services = new();
-        public RolesController()
+        private readonly APIServices _services;
+        public RolesController(APIServices services)
         {
+            _services = services;
             _services.SetModule("Roles");
         }
         // GET: Roles

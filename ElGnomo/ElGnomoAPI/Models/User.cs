@@ -15,5 +15,5 @@ public partial class User
 
     public string? PasswordHash { get; set; }
 
-    public virtual ICollection<Role> Roles { get; } = new List<Role>();
+    public virtual ICollection<RoleUser> RoleUsers { get; set; } = new List<RoleUser>();
 }

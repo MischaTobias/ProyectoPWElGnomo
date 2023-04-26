@@ -1,0 +1,13 @@
+Scaffold-DbContext "server=127.0.0.1;userid=root;password=root;database=elgnomo;TreatTinyAsBoolean=False" MySql.EntityFrameworkCore -OutputDir Models -ContextDir GnomoDbContext -f
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (optionsBuilder.IsConfigured) return;
+
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+        optionsBuilder.UseMySQL(configuration.GetConnectionString("ElGnomo"));
+    }

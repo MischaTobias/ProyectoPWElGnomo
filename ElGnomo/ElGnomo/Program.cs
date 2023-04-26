@@ -1,8 +1,11 @@
+using ElGnomo.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddTransient<APIServices>();
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpContextAccessor();
@@ -12,7 +15,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(opts =>
 {
     opts.IdleTimeout = TimeSpan.FromHours(1);
-    opts.Cookie.Name = "ElGnomo.Session",
+    opts.Cookie.Name = "ElGnomo.Session";
     opts.Cookie.HttpOnly = true;
     opts.Cookie.IsEssential = true;
 });
@@ -47,6 +50,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthentication();
 

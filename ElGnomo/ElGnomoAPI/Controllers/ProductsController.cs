@@ -2,11 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using ElGnomoAPI.GnomoDbContext;
 using ElGnomoAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ElGnomoAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class ProductsController : ControllerBase
 {
     private readonly ElgnomoContext _context;
@@ -20,10 +23,10 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
     {
-      if (_context.Products == null)
-      {
-          return NotFound();
-      }
+        if (_context.Products == null)
+        {
+            return NotFound();
+        }
         return await _context.Products.ToListAsync();
     }
 
@@ -31,10 +34,10 @@ public class ProductsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProduct(int id)
     {
-      if (_context.Products == null)
-      {
-          return NotFound();
-      }
+        if (_context.Products == null)
+        {
+            return NotFound();
+        }
         var product = await _context.Products.FindAsync(id);
 
         if (product == null)
@@ -81,10 +84,10 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Product>> PostProduct(Product product)
     {
-      if (_context.Products == null)
-      {
-          return Problem("Entity set 'ElgnomoContext.Products'  is null.");
-      }
+        if (_context.Products == null)
+        {
+            return Problem("Entity set 'ElgnomoContext.Products'  is null.");
+        }
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
 

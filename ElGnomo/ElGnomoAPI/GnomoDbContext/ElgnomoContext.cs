@@ -1,4 +1,6 @@
-﻿using ElGnomoAPI.Models;
+﻿using System;
+using System.Collections.Generic;
+using ElGnomoAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ElGnomoAPI.GnomoDbContext;
@@ -17,6 +19,8 @@ public partial class ElgnomoContext : DbContext
     public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<RoleUser> RoleUsers { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -56,24 +60,25 @@ public partial class ElgnomoContext : DbContext
 
             entity.Property(e => e.Description).HasMaxLength(100);
             entity.Property(e => e.Name).HasMaxLength(50);
+        });
 
-            entity.HasMany(d => d.Users).WithMany(p => p.Roles)
-                .UsingEntity<Dictionary<string, object>>(
-                    "RoleUser",
-                    r => r.HasOne<User>().WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("role_user_ibfk_2"),
-                    l => l.HasOne<Role>().WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("role_user_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("RoleId", "UserId").HasName("PRIMARY");
-                        j.ToTable("role_user");
-                        j.HasIndex(new[] { "UserId" }, "UserId");
-                    });
+        modelBuilder.Entity<RoleUser>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("role_user");
+
+            entity.HasIndex(e => e.RoleId, "RoleId");
+
+            entity.HasIndex(e => e.UserId, "UserId");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.RoleUsers)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("role_user_ibfk_1");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RoleUsers)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("role_user_ibfk_2");
         });
 
         modelBuilder.Entity<User>(entity =>

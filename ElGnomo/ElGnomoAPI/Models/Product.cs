@@ -1,4 +1,7 @@
-﻿namespace ElGnomoAPI.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace ElGnomoAPI.Models;
 
 public partial class Product
 {

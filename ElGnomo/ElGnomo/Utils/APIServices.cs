@@ -7,29 +7,36 @@ namespace ElGnomo.Utils;
 public class APIServices
 {
     private readonly int Timeout = 30;
-    //private static string Url = "https://localhost/CPAPI/api";
     //private static string Url = "https://localhost:7051/api";
+    private HttpClient _client = new();
+    private readonly HttpClientHandler _clientHandler = new();
+    private readonly IHttpContextAccessor _accessor;
     private string Url = default!;
     private readonly HttpStatusCode[] ErrorCodes = new[] { HttpStatusCode.BadRequest, HttpStatusCode.InternalServerError };
 
+    public APIServices(IHttpContextAccessor accessor)
+    {
+        _accessor = accessor;
+    }
+
     public APIServices SetModule(string controllerName)
     {
-        Url = $"https://localhost:7297/api/{controllerName}/";
+        Url = $"https://localhost/ElGnomoAPI/api/{controllerName}/";
+        _clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+        _client = new(_clientHandler)
+        {
+            Timeout = TimeSpan.FromSeconds(Timeout)
+        };
+
+        var token = _accessor.HttpContext!.Session.GetString("Token");
+        _client.DefaultRequestHeaders.Authorization = null;
+        _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         return this;
     }
 
     public async Task<T?> Get<T>(string path = "")
     {
-        HttpClientHandler clientHandler = new()
-        {
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
-        };
-        HttpClient httpClient = new(clientHandler)
-        {
-            Timeout = TimeSpan.FromSeconds(Timeout)
-        };
-
-        var response = await httpClient.GetAsync(Url + path);
+        var response = await _client.GetAsync(Url + path);
         if (ErrorCodes.Contains(response.StatusCode))
         {
             throw new Exception(response.StatusCode.ToString());
@@ -39,19 +46,10 @@ public class APIServices
 
     public async Task<T?> Post<T>(T content, string path = "")
     {
-        HttpClientHandler clientHandler = new()
-        {
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
-        };
-        HttpClient httpClient = new(clientHandler)
-        {
-            Timeout = TimeSpan.FromSeconds(Timeout)
-        };
-
         var json = JsonConvert.SerializeObject(content);
         var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await httpClient.PostAsync(Url + path, jsonContent);
+        var response = await _client.PostAsync(Url + path, jsonContent);
         if (ErrorCodes.Contains(response.StatusCode))
         {
             throw new Exception(response.StatusCode.ToString());
@@ -61,19 +59,10 @@ public class APIServices
 
     public async Task<T?> Post<T>(object content, string path = "")
     {
-        HttpClientHandler clientHandler = new()
-        {
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
-        };
-        HttpClient httpClient = new(clientHandler)
-        {
-            Timeout = TimeSpan.FromSeconds(Timeout)
-        };
-
         var json = JsonConvert.SerializeObject(content);
         var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await httpClient.PostAsync(Url + path, jsonContent);
+        var response = await _client.PostAsync(Url + path, jsonContent);
         if (ErrorCodes.Contains(response.StatusCode))
         {
             throw new Exception(response.StatusCode.ToString());
@@ -83,19 +72,10 @@ public class APIServices
 
     public async Task<T?> Put<T>(T content, string path = "")
     {
-        HttpClientHandler clientHandler = new()
-        {
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
-        };
-        HttpClient httpClient = new(clientHandler)
-        {
-            Timeout = TimeSpan.FromSeconds(Timeout)
-        };
-
         var json = JsonConvert.SerializeObject(content);
         var jsonContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await httpClient.PutAsync(Url + path, jsonContent);
+        var response = await _client.PutAsync(Url + path, jsonContent);
         if (ErrorCodes.Contains(response.StatusCode))
         {
             throw new Exception(response.StatusCode.ToString());
@@ -105,16 +85,7 @@ public class APIServices
 
     public async Task Delete(string path = "")
     {
-        HttpClientHandler clientHandler = new()
-        {
-            ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
-        };
-        HttpClient httpClient = new(clientHandler)
-        {
-            Timeout = TimeSpan.FromSeconds(Timeout)
-        };
-
-        var response = await httpClient.DeleteAsync(Url + path);
+        var response = await _client.DeleteAsync(Url + path);
         if (ErrorCodes.Contains(response.StatusCode))
         {
             throw new Exception(response.StatusCode.ToString());

@@ -1,31 +1,28 @@
 ﻿using ElGnomo.Utils;
 using ElGnomoModels.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ElGnomo.Controllers
 {
-    [Authorize]
-    public class UsersController : Controller
+    public class RoleUsersController : Controller
     {
         private readonly APIServices _services;
-
-        public UsersController(APIServices services)
+        public RoleUsersController(APIServices services)
         {
             _services = services;
-            _services.SetModule("Users");
+            _services.SetModule("RoleUsers");
         }
 
         public async Task<IActionResult> Index()
         {
-            var users = await _services.Get<IEnumerable<UserView>>();
-            return View(users);
+            var roleUsers = await _services.Get<IEnumerable<RoleUsersView>>();
+            return View(roleUsers);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var user = await _services.Get<UserView>(id.ToString());
-            return View(user);
+            var roleUser = await _services.Get<RoleUsersView>(id.ToString());
+            return View(roleUser);
         }
 
         public IActionResult Create()
@@ -35,33 +32,30 @@ namespace ElGnomo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(UserView user)
+        public async Task<IActionResult> Create(RoleUsersView roleUser)
         {
-            if (string.IsNullOrWhiteSpace(user.Password)) return View();
-            await _services.Post(user);
+            await _services.Post(roleUser);
             return RedirectToAction("Index");
-
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var user = await _services.Get<UserView>(id.ToString());
-            return View(user);
+            var roleUser = await _services.Get<RoleUsersView>(id.ToString());
+            return View(roleUser);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(UserView user)
+        public async Task<IActionResult> Edit(RoleUsersView roleUser)
         {
-            if (string.IsNullOrWhiteSpace(user.Password)) return View();
-            await _services.Put(user, user.Id.ToString());
+            await _services.Put(roleUser, roleUser.Id.ToString());
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _services.Get<UserView>(id.ToString());
-            return View(user);
+            var roleUser = await _services.Get<RoleUsersView>(id.ToString());
+            return View(roleUser);
         }
 
         [HttpPost, ActionName("Delete")]

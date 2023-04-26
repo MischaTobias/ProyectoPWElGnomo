@@ -2,11 +2,16 @@
 using Microsoft.EntityFrameworkCore;
 using ElGnomoAPI.GnomoDbContext;
 using ElGnomoAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+using ElGnomoModels.ViewModels;
+using ElGnomoAPI.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ElGnomoAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class UsersController : ControllerBase
 {
     private readonly ElgnomoContext _context;
@@ -20,10 +25,10 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
-      if (_context.Users == null)
-      {
-          return NotFound();
-      }
+        if (_context.Users == null)
+        {
+            return NotFound();
+        }
         return await _context.Users.ToListAsync();
     }
 
@@ -31,10 +36,10 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> GetUser(int id)
     {
-      if (_context.Users == null)
-      {
-          return NotFound();
-      }
+        if (_context.Users == null)
+        {
+            return NotFound();
+        }
         var user = await _context.Users.FindAsync(id);
 
         if (user == null)
@@ -48,14 +53,23 @@ public class UsersController : ControllerBase
     // PUT: api/Users/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutUser(int id, User user)
+    public async Task<IActionResult> PutUser(int id, UserView user)
     {
         if (id != user.Id)
         {
             return BadRequest();
         }
 
-        _context.Entry(user).State = EntityState.Modified;
+        User modifiedUser = new()
+        {
+            Id = id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PasswordHash = Cypher.CypherText(user.Password)
+        };
+
+        _context.Entry(modifiedUser).State = EntityState.Modified;
 
         try
         {
@@ -79,13 +93,22 @@ public class UsersController : ControllerBase
     // POST: api/Users
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<User>> PostUser(User user)
+    public async Task<ActionResult<User>> PostUser(UserView user)
     {
-      if (_context.Users == null)
-      {
-          return Problem("Entity set 'ElgnomoContext.Users'  is null.");
-      }
-        _context.Users.Add(user);
+        if (_context.Users == null)
+        {
+            return Problem("Entity set 'ElgnomoContext.Users'  is null.");
+        }
+
+        User newUser = new()
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PasswordHash = Cypher.CypherText(user.Password)
+        };
+
+        _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction("GetUser", new { id = user.Id }, user);

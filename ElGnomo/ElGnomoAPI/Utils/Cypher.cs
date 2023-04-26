@@ -1,4 +1,4 @@
-﻿namespace ElGnomo.Utils;
+﻿namespace ElGnomoAPI.Utils;
 
 public static class Cypher
 {

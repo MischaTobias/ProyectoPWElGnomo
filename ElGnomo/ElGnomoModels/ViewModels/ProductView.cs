@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ElGnomoModels.ViewModels;
+﻿namespace ElGnomoModels.ViewModels;
 
 public partial class ProductView
 {

@@ -30,9 +30,9 @@ PasswordHash VARCHAR(50)
 
 -- Create Role_User table
 CREATE TABLE Role_User (
+Id INT AUTO_INCREMENT PRIMARY KEY,
 RoleId INT,
 UserId INT,
-PRIMARY KEY (RoleId, UserId),
 FOREIGN KEY (RoleId) REFERENCES Role(Id),
 FOREIGN KEY (UserId) REFERENCES User(Id)
 );

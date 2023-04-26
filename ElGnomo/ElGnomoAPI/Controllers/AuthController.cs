@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ElGnomoAPI.Models;
 using ElGnomoAPI.GnomoDbContext;
 using Microsoft.EntityFrameworkCore;
+using ElGnomoModels.ViewModels;
+using ElGnomoAPI.Utils;
+using ElGnomoAPI.Models;
 
 namespace ElGnomoAPI.Controllers;
 
@@ -10,28 +12,38 @@ namespace ElGnomoAPI.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ElgnomoContext _context;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(ElgnomoContext context)
+    public AuthController(ElgnomoContext context, IConfiguration configuration)
     {
         _context = context;
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
-    public async Task<bool> Register(User user)
+    public async Task<TokenView> Register(UserView user)
     {
         var exists = _context.Users.Where(u => u.Email == user.Email).Any();
-        if (exists) return false;
+        if (exists) return new TokenView();
 
-        _context.Users.Add(user);
+        User newUser = new()
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PasswordHash = Cypher.CypherText(user.Password!)
+        };
+
+        _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
-        return true;
+        return new TokenView() { Token = CustomJWT.GetToken(newUser.Email, _configuration) };
     }
 
     [HttpPost("login")]
-    public async Task<bool> Login(User user)
+    public async Task<TokenView> Login(UserView user)
     {
-        var userInfo = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email && u.PasswordHash == user.PasswordHash);
-        if (userInfo == null) return false;
-        return true;
+        var userInfo = await _context.Users.FirstOrDefaultAsync(u => u.Email == user.Email && u.PasswordHash == Cypher.CypherText(user.Password!));
+        if (userInfo == null) return new TokenView();
+        return new TokenView() { Token = CustomJWT.GetToken(userInfo.Email, _configuration) };
     }
 }

@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ElGnomoModels.ViewModels;
 using ElGnomo.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ElGnomo.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
-        private readonly APIServices _services = new();
-        public ProductsController()
+        private readonly APIServices _services;
+        public ProductsController(APIServices services)
         {
+            _services = services;
             _services.SetModule("Products");
         }
 
